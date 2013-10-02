@@ -27,6 +27,54 @@ class mrp_config_settings(osv.osv_memory):
     _name = 'mrp.config.settings'
     _inherit = 'res.config.settings'
 
+    def default_get(self, cr, uid, field_names, context=None):
+
+        def bool_from_string(a_string):
+            if len(a_string) < 1:
+                return False
+            if a_string in ['f', 'F', 'false', 'False', '0']:
+                return False
+            return True
+
+        defaults = super(mrp_config_settings, self).default_get(
+                cr, uid, field_names, context=context)
+        config_model = self.pool.get('ir.config_parameter')
+        # link fieldnames to conversion functions and defaults
+        field_table = {
+                'auto_confirm_mo': (bool_from_string, True),
+        }
+        for field_name in field_names:
+            if field_name in field_table:
+                (conversion, default_value) = field_table[field_name]
+                defaults[field_name] = default_value
+                # Get values in try/catch, because they might not be
+                # present, or may not be convertable to the right type
+                try:
+                    val = config_model.get_param(cr, uid, field_name)
+                    if val:
+                        defaults[field_name] = conversion(val)
+                except:
+                    pass
+        return defaults
+
+    # use multi for function fields to get/set config parameters, even though
+    # for the moment we use only one.
+    def _get_config_parms(self, cr, uid, ids, field_names, args, context=None):
+        res = {}
+        if  not len(ids):
+            return res
+        vals = self.default_get(cr, uid, field_names, context=context)
+        for wizard_id in ids:  # Should be only one
+            res[wizard_id] = vals
+        return res
+
+    def _write_config_parms(
+            self, cr, uid, ids, field_name, field_value, arg, context):
+        config_model = self.pool.get('ir.config_parameter')
+        config_model.set_param(
+            cr, uid, field_name, '%s' % (field_value,))
+        return True
+
     _columns = {
         'module_mrp_repair': fields.boolean("Manage repairs of products ",
             help="""Allows to manage all product repairs.
@@ -71,6 +119,15 @@ class mrp_config_settings(osv.osv_memory):
                     * Manufacturer Product Code
                     * Product Attributes.
                 This installs the module product_manufacturer."""),
+        # using function field for auto_confirm_mo prevents db change for 7.0
+        'auto_confirm_mo': fields.function(
+            _get_config_parms,
+            fnct_inv=_write_config_parms,
+            type='boolean', method=True, store=False, multi=True,
+            string='Automatically confirm manufacturing orders',
+            help="""When set, will automatically confirm Manufacturing Orders, created for procurements.
+This will set defaults for BOM and Route, that can not be changed."""),
+
     }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

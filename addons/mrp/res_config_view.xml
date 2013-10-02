@@ -39,6 +39,10 @@
                                  <field name="module_stock_no_autopicking" class="oe_inline"/>
                                  <label for="module_stock_no_autopicking" />
                             </div>
+                             <div>
+                                 <field name="auto_confirm_mo" class="oe_inline"/>
+                                 <label for="auto_confirm_mo" />
+                            </div>
                         </div>
                     </group>
                     <group >

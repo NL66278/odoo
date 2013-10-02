@@ -106,6 +106,13 @@ class procurement_order(osv.osv):
             'company_id': procurement.company_id.id,
         }
 
+    def _get_auto_confirm_mo(self, cr, uid, context=None):
+        val = self.pool.get('ir.config_parameter').get_param(
+                cr, uid, 'auto_confirm_mo')
+        if val and val in ['f', 'F', 'false', 'False', '0']:
+            return False
+        return True
+    
     def make_mo(self, cr, uid, ids, context=None):
         """ Make Manufacturing(production) order from procurement
         @return: New created Production Orders procurement wise 
@@ -122,7 +129,8 @@ class procurement_order(osv.osv):
             self.write(cr, uid, [procurement.id], {'state': 'running', 'production_id': produce_id})   
             bom_result = production_obj.action_compute(cr, uid,
                     [produce_id], properties=[x.id for x in procurement.property_ids])
-            wf_service.trg_validate(uid, 'mrp.production', produce_id, 'button_confirm', cr)
+            if self._get_auto_confirm_mo(cr, uid, context=context):
+                wf_service.trg_validate(uid, 'mrp.production', produce_id, 'button_confirm', cr)
         self.production_order_create_note(cr, uid, ids, context=context)
         return res
 
