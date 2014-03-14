@@ -1006,8 +1006,8 @@ class mrp_production(osv.osv):
 
         # Take routing address as a Shipment Address.
         # If usage of routing location is a internal, make outgoing shipment otherwise internal shipment
-        if production.bom_id.routing_id and production.bom_id.routing_id.location_id:
-            routing_loc = production.bom_id.routing_id.location_id
+        if production.routing_id and production.routing_id.location_id:
+            routing_loc = production.routing_id.location_id
             if routing_loc.usage != 'internal':
                 pick_type = 'out'
             partner_id = routing_loc.partner_id and routing_loc.partner_id.id or False
