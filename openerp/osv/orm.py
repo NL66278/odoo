@@ -3249,6 +3249,8 @@ class BaseModel(object):
 
                             if isinstance(f, fields.many2one) or (isinstance(f, fields.function) and f._type == 'many2one' and f.store):
                                 dest_model = self.pool.get(f._obj)
+                                assert dest_model, (
+                                    'No model found for %s' % f._obj)
                                 if dest_model._table != 'ir_actions':
                                     self._m2o_fix_foreign_key(cr, self._table, k, dest_model, f.ondelete)
 
