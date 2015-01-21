@@ -1967,6 +1967,11 @@ class BaseModel(object):
             else:
                 cr.execute('select name, model from ir_ui_view where (id=%s or inherit_id=%s) and arch like %s', (view_id, view_id, '%%%s%%' % field))
                 res = cr.fetchall()[:]
+                assert res, (
+                    'No record in ir_ui_view for'
+                    ' (id=%s or inherit_id=%s) and arch like %s' %
+                    (view_id, view_id, field)
+                )
                 __, model = res and res[0] or (None, None)
                 res.insert(0, ("Can't find field '%s' in the following view parts composing the view of object model '%s':" % (field, model), None))
                 msg = "\n * ".join([r[0] for r in res])
