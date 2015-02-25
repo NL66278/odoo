@@ -18,8 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-
 import sys
 import copy
 import reportlab
@@ -31,6 +29,7 @@ import color
 import os
 import logging
 from lxml import etree
+from xml.etree.ElementTree import tostring
 import base64
 from distutils.version import LooseVersion
 from reportlab.platypus.doctemplate import ActionFlowable
