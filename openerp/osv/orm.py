@@ -3775,7 +3775,11 @@ class BaseModel(object):
                 cr.execute(query, [tuple(sub_ids)] + rule_params)
                 results = cr.dictfetchall()
                 result_ids = [x['id'] for x in results]
-                self._check_record_rules_result_count(cr, user, sub_ids, result_ids, 'read', context=context)
+                self._check_record_rules_result_count(
+                    cr, user, sub_ids, result_ids, 'read',
+                    record_rules=rule_clause, rule_params=rule_params,
+                    context=context
+                )
                 res.extend(results)
         else:
             self.check_access_rule(cr, user, ids, 'read', context=context)
@@ -3962,7 +3966,9 @@ class BaseModel(object):
                 # mention the first one only to keep the error message readable
                 raise except_orm('ConcurrencyException', _('A document was modified since you last viewed it (%s:%d)') % (self._description, res[0]))
 
-    def _check_record_rules_result_count(self, cr, uid, ids, result_ids, operation, context=None):
+    def _check_record_rules_result_count(
+            self, cr, uid, ids, result_ids, operation,
+            record_rules=None, rule_params=None, context=None):
         """Verify the returned rows after applying record rules matches
            the length of `ids`, and raise an appropriate exception if it does not.
         """
@@ -3977,6 +3983,11 @@ class BaseModel(object):
                 if uid == SUPERUSER_ID:
                     return
                 _logger.warning('Access Denied by record rules for operation: %s, uid: %s, model: %s', operation, uid, self._name)
+                _logger.warning(
+                    'These ids %s where filtered out by these rules: %s'
+                    ' with params %s.',
+                    str(missing_ids), str(record_rules), str(rule_params)
+                )
                 raise except_orm(_('Access Denied'),
                                  _('The requested operation cannot be completed due to security restrictions. Please contact your system administrator.\n\n(Document type: %s, Operation: %s)') % \
                                     (self._description, operation))
@@ -4030,7 +4041,11 @@ class BaseModel(object):
                                ' WHERE ' + self._table + '.id IN %s' + where_clause,
                                [sub_ids] + where_params)
                     returned_ids = [x['id'] for x in cr.dictfetchall()]
-                    self._check_record_rules_result_count(cr, uid, sub_ids, returned_ids, operation, context=context)
+                    self._check_record_rules_result_count(
+                        cr, uid, sub_ids, returned_ids, operation, 
+                        record_rules=where_clause, rule_params=where_params,
+                        context=context
+                    )
 
     def _workflow_trigger(self, cr, uid, ids, trigger, context=None):
         """Call given workflow trigger as a result of a CRUD operation"""
