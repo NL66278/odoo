@@ -932,8 +932,9 @@ class DataSet(http.Controller):
     def _call_kw(self, model, method, args, kwargs):
         if method.startswith('_'):
             raise Exception("Access Denied: Underscore prefixed methods cannot be remotely called")
-
-        return getattr(request.registry.get(model), method)(request.cr, request.uid, *args, **kwargs)
+        model_obj = request.registry.get(model)
+        assert model_obj, "Model %s not found in registry!" % model
+        return getattr(model_obj, method)(request.cr, request.uid, *args, **kwargs)
 
     @http.route('/web/dataset/call', type='json', auth="user")
     def call(self, model, method, args, domain_id=None, context_id=None):
