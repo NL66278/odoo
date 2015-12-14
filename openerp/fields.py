@@ -837,7 +837,11 @@ class Field(object):
             self.determine_draft_value(record)
 
         # the result should be in cache now
-        return record._cache[self]
+        try:
+            return record._cache[self]
+        except:
+            print 'Error retrieving %s from %s' % (self.name, str(record))
+            pass
 
     def __set__(self, record, value):
         """ set the value of field ``self`` on ``record`` """
