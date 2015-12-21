@@ -28,7 +28,8 @@ class purchase_order(osv.osv):
 
     def _choose_account_from_po_line(self, cr, uid, order_line, context=None):
         account_id = super(purchase_order, self)._choose_account_from_po_line(cr, uid, order_line, context=context)
-        if order_line.product_id and not order_line.product_id.type == 'service':
+        if (order_line.product_id and
+                order_line.product_id.type == 'product'):
             acc_id = order_line.product_id.property_stock_account_input and order_line.product_id.property_stock_account_input.id
             if not acc_id:
                 acc_id = order_line.product_id.categ_id.property_stock_account_input_categ and order_line.product_id.categ_id.property_stock_account_input_categ.id

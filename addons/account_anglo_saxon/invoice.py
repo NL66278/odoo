@@ -79,7 +79,8 @@ class account_invoice_line(osv.osv):
         fpos = inv.fiscal_position or False
         company_currency = inv.company_id.currency_id.id
 
-        if i_line.product_id.type != 'service' and i_line.product_id.valuation == 'real_time':
+        if (i_line.product_id.type == 'product' and
+                i_line.product_id.valuation == 'real_time'):
             # debit account dacc will be the output account
             # first check the product, if empty check the category
             dacc = i_line.product_id.property_stock_account_output and i_line.product_id.property_stock_account_output.id
@@ -137,7 +138,7 @@ class account_invoice_line(osv.osv):
         inv = i_line.invoice_id
         company_currency = inv.company_id.currency_id.id
         if i_line.product_id and i_line.product_id.valuation == 'real_time':
-            if i_line.product_id.type != 'service':
+            if i_line.product_id.type == 'product':
                 # get the price difference account at the product
                 acc = i_line.product_id.property_account_creditor_price_difference and i_line.product_id.property_account_creditor_price_difference.id
                 if not acc:
