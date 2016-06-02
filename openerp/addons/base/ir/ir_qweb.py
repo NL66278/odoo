@@ -230,7 +230,10 @@ class QWeb(orm.AbstractModel):
 
         try:
             return str(expr % qwebcontext)
-        except Exception:
+        except Exception e:
+            _logger.error(
+                "Error %s evaluating qweb expression %s." % (e, expr)
+            )
             template = qwebcontext.get('__template__')
             raise_qweb_exception(message="Format error for expression %r" % expr, expression=expr, template=template)
 
