@@ -230,7 +230,7 @@ class QWeb(orm.AbstractModel):
 
         try:
             return str(expr % qwebcontext)
-        except Exception e:
+        except Exception, e:
             _logger.error(
                 "Error %s evaluating qweb expression %s." % (e, expr)
             )
