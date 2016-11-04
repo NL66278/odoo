@@ -58,25 +58,24 @@
                                 />
                             <group
                                 attrs="{'invisible':[('writeoff_amount','=',0)]}"
-                                />
+                                >
+                                <field
+                                    name="payment_option"
+                                    required="1"
+                                    />
+                                <group
+                                    attrs="{'invisible':[('payment_option','!=','with_writeoff')]}"
+                                    >
                                     <field
-                                        name="payment_option"
-                                        required="1"
+                                        name="writeoff_acc_id"
+                                        attrs="{'required':[('payment_option','=','with_writeoff'), ('writeoff_amount','!=',0)]}"
+                                        domain="[('type','=','other')]"
                                         />
-                                    <group
-                                        attrs="{'invisible':[('payment_option','!=','with_writeoff')]}"
+                                    <field name="comment"/>
+                                    <field
+                                        name="analytic_id"
+                                        groups="analytic.group_analytic_accounting"
                                         />
-                                        <field
-                                            name="writeoff_acc_id"
-                                            attrs="{'required':[('payment_option','=','with_writeoff'), ('writeoff_amount','!=',0)]}"
-                                            domain="[('type','=','other')]"
-                                            />
-                                        <field name="comment"/>
-                                        <field
-                                            name="analytic_id"
-                                            groups="analytic.group_analytic_accounting"
-                                            />
-                                    </group>
                                 </group>
                             </group>
                         </group>
