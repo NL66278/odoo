@@ -51,11 +51,11 @@ This module manages:
         'account_voucher_view.xml',
         'voucher_payment_receipt_view.xml',
         'voucher_sales_purchase_view.xml',
-        'account_voucher_wizard.xml',
         'account_voucher_pay_invoice.xml',
         'report/account_voucher_sales_receipt_view.xml',
         'security/account_voucher_security.xml',
         'account_voucher_data.xml',
+        'wizards/account_pay_invoice_wizard.xml',
     ],
     'test' : [
         'test/account_voucher_users.yml',

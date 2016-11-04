@@ -26,16 +26,14 @@ class invoice(osv.osv):
     _inherit = 'account.invoice'
 
     def invoice_pay_customer(self, cr, uid, ids, context=None):
-        if not ids: return []
-        dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_dialog_form')
-
+        if not ids:
+            return []
         inv = self.browse(cr, uid, ids[0], context=context)
         return {
             'name':_("Pay Invoice"),
             'view_mode': 'form',
-            'view_id': view_id,
             'view_type': 'form',
-            'res_model': 'account.voucher',
+            'res_model': 'pay.invoice.wizard',
             'type': 'ir.actions.act_window',
             'nodestroy': True,
             'target': 'new',

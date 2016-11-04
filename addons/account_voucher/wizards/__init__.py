@@ -18,4 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import account_pay_invoice_wizard
+
+import account_voucher
+import invoice
+import report
+import wizards
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

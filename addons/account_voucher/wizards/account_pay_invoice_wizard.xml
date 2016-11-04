@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+
+        <!-- Register Payment Form (old Pay Invoice wizard) -->
+        <record
+            id="account_pay_invoice_wizard_form"
+            model="ir.ui.view"
+            >
+            <field name="name">account.pay.invoice.wizard.form</field>
+            <field name="model">account.pay.invoice.wizard</field>
+            <field name="priority">30</field>
+            <field name="arch" type="xml">
+                <form string="Payment">
+                    <group>
+                        <group>
+                            <field name="state" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="account_id" invisible="True"/>
+                            <field name="partner_id"/>
+                            <field
+                                name="amount"
+                                class="oe_inline"
+                                string="Paid Amount"
+                                widget='monetary'
+                                options='{"currency_field": "currency_id"}'
+                                />
+                            <field name="journal_id"
+                                domain="[('type','in',['bank', 'cash'])]"
+                                widget="selection"
+                                string="Payment Method"
+                                />
+                        </group>
+
+                        <group>
+                            <field name="date"/>
+                            <field name="period_id"/>
+                            <field
+                                name="reference"
+                                string="Payment Ref"
+                                placeholder="e.g. 003/10"
+                                />
+                            <field
+                                name="name"
+                                placeholder="e.g. Invoice SAJ/0042"
+                                />
+                            <field
+                                name="company_id"
+                                widget="selection"
+                                groups="base.group_multi_company"
+                                />
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field
+                                name="writeoff_amount"
+                                widget="monetary"
+                                options="{'currency_field': 'currency_id'}"
+                                />
+                            <group
+                                attrs="{'invisible':[('writeoff_amount','=',0)]}"
+                                />
+                                    <field
+                                        name="payment_option"
+                                        required="1"
+                                        />
+                                    <group
+                                        attrs="{'invisible':[('payment_option','!=','with_writeoff')]}"
+                                        />
+                                    <field
+                                        name="writeoff_acc_id"
+                                        attrs="{'required':[('payment_option','=','with_writeoff'), ('writeoff_amount','!=',0)]}"
+                                        domain="[('type','=','other')]"
+                                        />
+                                    <field name="comment"/>
+                                    <field
+                                        name="analytic_id"
+                                        groups="analytic.group_analytic_accounting"
+                                        />
+                                    </group>
+                                </group>
+                            </group>
+                            <group>
+                        </group>
+                    </group>
+                    <footer>
+                        <button
+                            name="register_payment"
+                            string="Register Payment"
+                            class="oe_highlight"
+                            type="object"
+                            />
+                        or
+                        <button
+                            string="Cancel"
+                            class="oe_link"
+                            special="cancel"
+                            />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+</openerp>
