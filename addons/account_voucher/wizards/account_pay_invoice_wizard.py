@@ -25,6 +25,16 @@ class AccountPayInvoiceWizard(models.TransientModel):
     _name = 'account.pay.invoice.wizard'
     _description = 'Register customer payment for invoice'
 
+    @api.multi
+    def _get_journal_currency(self):
+        """Determine currency from journal."""
+        for rec in self:
+            rec.currency_id = (
+                rec.journal_id.currency_id or
+                rec.company_id.currency_id or
+                False
+            )
+
     state = fields.Selection(
         selection=[('start','start'),('finish','finish')],
         string='State',
