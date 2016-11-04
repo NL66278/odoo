@@ -22,7 +22,9 @@ class AccountPayInvoiceWizard(models.TransientModel):
             'invoice_id': invoice_id,
             'company_id': invoice.company_id.id,
             'date': fields.Date.today(),
-            'payment_expected_currency_id': invoice.currency_id.id,
+            'currency_id': invoice.currency_id.id,
+            'payment_rate_currency_id': invoice.currency_id.id,
+            'payment_rate': 1.0,
             'currency_id': invoice.currency_id.id,
             'partner_id': self.env['res.partner']._find_accounting_partner(
                 invoice.partner_id).id,
@@ -50,10 +52,9 @@ class AccountPayInvoiceWizard(models.TransientModel):
                 False
             )
 
-    @api.multi
-    @api.depends
+    @api.depends('amount', 'amount_unreconciled')
     def _compute_writeoff_amount(self):
-        """Determine currency from journal."""
+        """Compute writeoff amount."""
         for rec in self:
             rec.writeoff_amount = rec.amount_unreconciled - rec.amount
 
@@ -133,14 +134,19 @@ class AccountPayInvoiceWizard(models.TransientModel):
     currency_id = fields.Many2one(
         comodel_name='res.currency',
         compute='_get_journal_currency',
-        string='Currency',
+        string='Invoice currency',
         readonly=True,
         required=True,
     )
-    payment_expected_currency_id = fields.Many2one(
+    payment_rate_currency_id = fields.Many2one(
         comodel_name='res.currency',
-        string='Invoice currency',
+        string='Payment currency',
         readonly=True,
+    )
+    payment_rate = fields.Float(
+        string='',
+        readonly=True,
+        help="Exchange currency rate at time of payment"
     )
     reference = fields.Char(
         string='Ref #',
@@ -194,9 +200,12 @@ class AccountPayInvoiceWizard(models.TransientModel):
             'partner_id': rec.partner_id.id,
             'writeoff_acc_id': rec.writeoff_acc_id.id,
             'payment_option': rec.payment_option,
+            'payment_rate_currency_id': rec.payment_rate_currency_id,
+            'payment_rate': rec.payment_rate,
             'account_id': rec.account_id.id,
             'analytic_id': rec.analytic_id.id,
             'period_id': rec.period_id.id,
+            'company_id': rec.company_id.id,
             'date': rec.date,
             'amount': rec.amount,
         }

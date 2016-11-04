@@ -18,19 +18,30 @@
                             <field name="state" invisible="1"/>
                             <field name="type" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
+                            <field name="payment_rate" invisible="1"/>
+                            <field
+                                name="payment_rate_currency_id"
+                                invisible="1"
+                                />
                             <field name="account_id" invisible="True"/>
                             <field name="partner_id"/>
-                            <field name="amount_original"/>
+                            <field
+                                name="amount_original"
+                                widget='monetary'
+                                options='{"currency_field": "currency_id"}'
+                                />
                             <field 
                                 name="amount_unreconciled"
                                 groups="account.group_account_user"
+                                widget='monetary'
+                                options='{"currency_field": "currency_id"}'
                                 />
                             <field
                                 name="amount"
                                 class="oe_inline"
                                 string="Paid Amount"
                                 widget='monetary'
-                                options='{"currency_field": "currency_id"}'
+                                options='{"currency_field": "payment_rate_currency_id"}'
                                 />
                             <field name="journal_id"
                                 domain="[('type','in',['bank', 'cash'])]"
