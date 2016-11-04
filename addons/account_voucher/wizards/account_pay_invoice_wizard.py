@@ -20,7 +20,7 @@ class AccountPayInvoiceWizard(models.TransientModel):
         )
         res.update({
             'invoice_id': invoice_id,
-            'company_id': invoice.company_id,
+            'company_id': invoice.company_id.id,
             'date': fields.Date.today(),
             'payment_expected_currency_id': invoice.currency_id.id,
             'currency_id': invoice.currency_id.id,
