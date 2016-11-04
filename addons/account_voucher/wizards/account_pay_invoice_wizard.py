@@ -56,6 +56,10 @@ class AccountPayInvoiceWizard(models.TransientModel):
         readonly=True,
         help="Debit account for invoice."
     )
+    writeoff_amount = fields.Float(
+        string='Amount to write off',
+        help="Actual amount paid"
+    )
     writeoff_acc_id = fields.Many2one(
         comodel_name='account.account',
         string='Account for write off',
