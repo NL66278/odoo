@@ -1,29 +1,38 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
 from openerp import api, fields, models, _
 
 
 class AccountPayInvoiceWizard(models.TransientModel):
     _name = 'account.pay.invoice.wizard'
-    _description = 'Register customer payment for invoice'
+    _description = 'Register payment for invoice'
+
+    @api.model
+    def default_get(self, vals):
+        """Fill defaults from invoice info."""
+        res = super(AccountPayInvoiceWizard, self).default_get(vals)
+        invoice_id = self.env.context.get('invoice_id')
+        res.update({
+            'invoice_id': invoice_id.id,
+            'payment_expected_currency_id': invoice_id.currency_id.id,
+            'currency_id': invoice_id.currency_id.id,
+            'partner_id': self.env['res.partner']._find_accounting_partner(
+                invoice_id.partner_id).id,
+            'amount': (
+                invoice_id.type in ('out_refund', 'in_refund') and
+                -invoice_id.residual or
+                invoice_id.residual
+            ),
+            'reference': invoice_id.name,
+            'close_after_process': True,
+            'invoice_type': invoice_id.type,
+            'type': (
+                invoice_id.type in ('out_invoice', 'out_refund') and
+                'receipt' or
+                'payment'
+            ),
+        })
+        return res
 
     @api.multi
     def _get_journal_currency(self):
@@ -40,6 +49,11 @@ class AccountPayInvoiceWizard(models.TransientModel):
         string='State',
         readonly=True,
     )
+    invoice_id = fields.Many2one(
+        comodel_name='account_invoice',
+        string='Invoice',
+        readonly=True,
+    )
     partner_id = fields.Many2one(
         comodel_name='res.partner',
         string='Customer',
@@ -49,6 +63,14 @@ class AccountPayInvoiceWizard(models.TransientModel):
     amount = fields.Float(
         string='Amount',
         help="Actual amount paid"
+    )
+    original_amount = fields.Float(
+        string='Amount',
+        help="Total amount to pay"
+    )
+    amount_unreconciled = fields.Float(
+        string='Amount',
+        help="Amount still to pay"
     )
     account_id = fields.Many2one(
         comodel_name='account.account',
@@ -99,12 +121,26 @@ class AccountPayInvoiceWizard(models.TransientModel):
         readonly=True,
         required=True,
     )
+    payment_expected_currency_id = fields.Many2one(
+        comodel_name='res.currency',
+        string='Invoice currency',
+        readonly=True,
+    )
     reference = fields.Char(
         string='Ref #',
         help="Transaction reference number.",
     )
     pre_line = fields.Boolean(
         string='Previous Payments ?'
+    )
+    type = fields.Selection(
+        selection=[
+            ('payment', 'Payment'),
+            ('receipt', 'Receipt'),
+        ],
+        string='Type',
+        required=True,
+        readonly=True,
     )
     payment_option = fields.Selection(
         selection=[
@@ -136,13 +172,14 @@ class AccountPayInvoiceWizard(models.TransientModel):
         # Need to create payment voucher object first
         rec = self[0]
         vals = {
-            'type': 'payment',
+            'type': rec.type,
             'state': 'draft',
             'journal_id': rec.journal_id.id,
             'partner_id': rec.partner_id.id,
             'writeoff_acc_id': rec.writeoff_acc_id.id,
             'payment_option': rec.payment_option,
             'account_id': rec.account_id.id,
+            'analytic_id': rec.analytic_id.id,
             'period_id': rec.period_id.id,
             'date': rec.date,
             'amount': rec.amount,
