@@ -13,17 +13,22 @@ class AccountPayInvoiceWizard(models.TransientModel):
         res = super(AccountPayInvoiceWizard, self).default_get(vals)
         invoice_id = self.env.context.get('invoice_id')
         invoice = self.env['account.invoice'].browse(invoice_id)
+        amount = (
+            invoice.type in ('out_refund', 'in_refund') and
+            -invoice.residual or
+            invoice.residual
+        )
         res.update({
             'invoice_id': invoice_id,
+            'company_id': invoice.company_id,
+            'date': fields.Date.today(),
             'payment_expected_currency_id': invoice.currency_id.id,
             'currency_id': invoice.currency_id.id,
             'partner_id': self.env['res.partner']._find_accounting_partner(
                 invoice.partner_id).id,
-            'amount': (
-                invoice.type in ('out_refund', 'in_refund') and
-                -invoice.residual or
-                invoice.residual
-            ),
+            'amount': amount,
+            'amount_original': invoice.amount_total,
+            'amount_unreconciled': invoice.residual,
             'reference': invoice.name,
             'close_after_process': True,
             'invoice_type': invoice.type,
@@ -45,6 +50,13 @@ class AccountPayInvoiceWizard(models.TransientModel):
                 False
             )
 
+    @api.multi
+    @api.depends
+    def _compute_writeoff_amount(self):
+        """Determine currency from journal."""
+        for rec in self:
+            rec.writeoff_amount = rec.amount_unreconciled - rec.amount
+
     state = fields.Selection(
         selection=[('start','start'),('finish','finish')],
         string='State',
@@ -62,15 +74,17 @@ class AccountPayInvoiceWizard(models.TransientModel):
         help="Customer for invoice."
     )
     amount = fields.Float(
-        string='Amount',
+        string='Amount to pay',
         help="Actual amount paid"
     )
     amount_original = fields.Float(
-        string='Amount',
+        string='Original invoice amount',
+        readonly=True,
         help="Total amount to pay"
     )
     amount_unreconciled = fields.Float(
-        string='Amount',
+        string='Invoice amount still to pay',
+        readonly=True,
         help="Amount still to pay"
     )
     account_id = fields.Many2one(
@@ -81,6 +95,7 @@ class AccountPayInvoiceWizard(models.TransientModel):
     )
     writeoff_amount = fields.Float(
         string='Amount to write off',
+        compute='_compute_writeoff_amount',
         help="Actual amount paid"
     )
     writeoff_acc_id = fields.Many2one(
