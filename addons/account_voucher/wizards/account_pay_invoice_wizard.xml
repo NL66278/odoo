@@ -30,7 +30,6 @@
                                 string="Payment Method"
                                 />
                         </group>
-
                         <group>
                             <field name="date"/>
                             <field name="period_id"/>
@@ -67,20 +66,19 @@
                                     <group
                                         attrs="{'invisible':[('payment_option','!=','with_writeoff')]}"
                                         />
-                                    <field
-                                        name="writeoff_acc_id"
-                                        attrs="{'required':[('payment_option','=','with_writeoff'), ('writeoff_amount','!=',0)]}"
-                                        domain="[('type','=','other')]"
-                                        />
-                                    <field name="comment"/>
-                                    <field
-                                        name="analytic_id"
-                                        groups="analytic.group_analytic_accounting"
-                                        />
+                                        <field
+                                            name="writeoff_acc_id"
+                                            attrs="{'required':[('payment_option','=','with_writeoff'), ('writeoff_amount','!=',0)]}"
+                                            domain="[('type','=','other')]"
+                                            />
+                                        <field name="comment"/>
+                                        <field
+                                            name="analytic_id"
+                                            groups="analytic.group_analytic_accounting"
+                                            />
                                     </group>
                                 </group>
                             </group>
-                            <group>
                         </group>
                     </group>
                     <footer>
