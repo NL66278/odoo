@@ -64,7 +64,7 @@ class AccountPayInvoiceWizard(models.TransientModel):
         string='Amount',
         help="Actual amount paid"
     )
-    original_amount = fields.Float(
+    amount_original = fields.Float(
         string='Amount',
         help="Total amount to pay"
     )
