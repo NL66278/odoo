@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
+    <data>
 
         <!-- Register Payment Form (old Pay Invoice wizard) -->
         <record
@@ -98,4 +99,5 @@
             </field>
         </record>
 
+    </data>
 </openerp>
