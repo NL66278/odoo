@@ -120,6 +120,10 @@ class AccountPayInvoiceWizard(models.TransientModel):
     comment = fields.Char(
         string='Counterpart Comment',
     )
+    analytic_id = fields.Many2one(
+        comodel_name='account.analytic.account',
+        string='Write-Off Analytic Account',
+    )
 
     @api.multi
     def register_payment(self):
