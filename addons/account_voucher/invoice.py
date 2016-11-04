@@ -33,7 +33,7 @@ class invoice(osv.osv):
             'name':_("Pay Invoice"),
             'view_mode': 'form',
             'view_type': 'form',
-            'res_model': 'pay.invoice.wizard',
+            'res_model': 'account.pay.invoice.wizard',
             'type': 'ir.actions.act_window',
             'nodestroy': True,
             'target': 'new',
@@ -50,6 +50,3 @@ class invoice(osv.osv):
                 'type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment'
             }
         }
-
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
