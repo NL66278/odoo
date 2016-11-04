@@ -1,34 +1,15 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+from openerp import api, models
 
-from openerp.osv import osv
-from openerp.tools.translate import _
 
-class invoice(osv.osv):
+class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
-    def invoice_pay_customer(self, cr, uid, ids, context=None):
-        if not ids:
+    @api.multi
+    def invoice_pay_customer(self):
+        if not self.ids:
             return []
-        inv = self.browse(cr, uid, ids[0], context=context)
         return {
             'name':_("Pay Invoice"),
             'view_mode': 'form',
@@ -39,6 +20,6 @@ class invoice(osv.osv):
             'target': 'new',
             'domain': '[]',
             'context': {
-                'invoice_id': inv.id,
+                'invoice_id': self.ids[0],
             }
         }

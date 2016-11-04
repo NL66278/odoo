@@ -12,22 +12,23 @@ class AccountPayInvoiceWizard(models.TransientModel):
         """Fill defaults from invoice info."""
         res = super(AccountPayInvoiceWizard, self).default_get(vals)
         invoice_id = self.env.context.get('invoice_id')
+        invoice = self.env['account.invoice'].browse(invoice_id)
         res.update({
-            'invoice_id': invoice_id.id,
-            'payment_expected_currency_id': invoice_id.currency_id.id,
-            'currency_id': invoice_id.currency_id.id,
+            'invoice_id': invoice_id,
+            'payment_expected_currency_id': invoice.currency_id.id,
+            'currency_id': invoice.currency_id.id,
             'partner_id': self.env['res.partner']._find_accounting_partner(
-                invoice_id.partner_id).id,
+                invoice.partner_id).id,
             'amount': (
-                invoice_id.type in ('out_refund', 'in_refund') and
-                -invoice_id.residual or
-                invoice_id.residual
+                invoice.type in ('out_refund', 'in_refund') and
+                -invoice.residual or
+                invoice.residual
             ),
-            'reference': invoice_id.name,
+            'reference': invoice.name,
             'close_after_process': True,
-            'invoice_type': invoice_id.type,
+            'invoice_type': invoice.type,
             'type': (
-                invoice_id.type in ('out_invoice', 'out_refund') and
+                invoice.type in ('out_invoice', 'out_refund') and
                 'receipt' or
                 'payment'
             ),
