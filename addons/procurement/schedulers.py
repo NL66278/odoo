@@ -223,8 +223,9 @@ class procurement_order(osv.osv):
             """Procurement message, mostly for specific order point."""
             opstr = (
                 op and
-                (" orderpoint with id %d and name %s -" %
-                 (op.id, op.name)) or
+                (" orderpoint with id %d and name %s"
+                 " for product %s -" %
+                 (op.id, op.name, op.product_id.name)) or
                 ''
             )
             logger.debug("PROCUREMENT:%s %s." % (opstr, message))
@@ -312,6 +313,10 @@ class procurement_order(osv.osv):
                                         break
                                 qty = to_generate
                         if qty:
+                            procurement_log(
+                                "creating procurement for qty %.2f" % qty,
+                                op=op
+                            )
                             proc_id = procurement_obj.create(
                                 cr, uid, self._prepare_orderpoint_procurement(
                                     cr, uid, op, qty, context=context),
