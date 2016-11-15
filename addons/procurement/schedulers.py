@@ -334,6 +334,7 @@ class procurement_order(osv.osv):
                                 "aborting procurement after recomputing qty"
                                 " to %.2f" % qty,
                                 op=op
+                            )
                     else:
                         procurement_log(
                             "virtual stock %.2f greater then"
