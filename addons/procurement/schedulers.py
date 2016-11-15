@@ -199,7 +199,7 @@ class procurement_order(osv.osv):
                 'location_id': orderpoint.location_id.id,
                 'procure_method': 'make_to_order',
                 'origin': orderpoint.name}
-        
+
     def _product_virtual_get(self, cr, uid, order_point):
         location_obj = self.pool.get('stock.location')
         return location_obj._product_virtual_get(cr, uid,
@@ -208,7 +208,7 @@ class procurement_order(osv.osv):
 
     def _procure_orderpoint_confirm(self, cr, uid, automatic=False,\
             use_new_cursor=False, context=None, user_id=False):
-        '''
+        """
         Create procurement based on Orderpoint
         use_new_cursor: False or the dbname
 
@@ -219,13 +219,22 @@ class procurement_order(osv.osv):
         @param param: False or the dbname
         @return:  Dictionary of values
         """
-        '''
+        def procurement_log(message, op=None):
+            """Procurement message, mostly for specific order point."""
+            opstr = (
+                op and
+                (" orderpoint with id %d and name %s -" %
+                 (op.id, op.name)) or
+                ''
+            )
+            logger.debug("PROCUREMENT:%s %s." (opstr, message))
+
         if context is None:
             context = {}
         if use_new_cursor:
             cr = pooler.get_db(use_new_cursor).cursor()
         orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
-        
+
         procurement_obj = self.pool.get('procurement.order')
         wf_service = netsvc.LocalService("workflow")
         ids = [1]
@@ -233,6 +242,10 @@ class procurement_order(osv.osv):
         if automatic:
             self.create_automatic_op(cr, uid, context=context)
         orderpoint_ids = orderpoint_obj.search(cr, uid, [])
+        procurement_log(
+            "starting to check %d minimum stock rules." %
+            len(orderpoint_ids)
+        )
         while orderpoint_ids:
             ids = orderpoint_ids[:100]
             del orderpoint_ids[:100]
@@ -240,42 +253,94 @@ class procurement_order(osv.osv):
                 try:
                     prods = self._product_virtual_get(cr, uid, op)
                     if prods is None:
+                        procurement_log(
+                            "no stock information for orderpoint", op=op
+                        )
                         continue
                     if prods < op.product_min_qty:
                         qty = max(op.product_min_qty, op.product_max_qty)-prods
-
+                        procurement_log(
+                            "need to procure %.2f in addition to"
+                            " %2.f already available" %
+                            (qty, prods),
+                            op=op
+                        )
                         reste = qty % op.qty_multiple
                         if reste > 0:
                             qty += op.qty_multiple - reste
-
                         if qty <= 0:
+                            procurement_log(
+                                "aborting procurement after recomputing qty"
+                                " to %.2f with min. order qty %.2f"
+                                " and rest %2.f" %
+                                (qty, op.qty_multiple, reste),
+                                op=op
+                            )
                             continue
                         if op.product_id.type not in ('consu'):
                             if op.procurement_draft_ids:
-                            # Check draft procurement related to this order point
-                                pro_ids = [x.id for x in op.procurement_draft_ids]
+                            # Check draft procurement related to order point
+                                pro_ids = [
+                                    x.id for x in op.procurement_draft_ids
+                                ]
                                 procure_datas = procurement_obj.read(
-                                    cr, uid, pro_ids, ['id', 'product_qty'], context=context)
+                                    cr, uid, pro_ids,
+                                    ['id', 'product_qty'], context=context
+                                )
                                 to_generate = qty
                                 for proc_data in procure_datas:
                                     if to_generate >= proc_data['product_qty']:
-                                        wf_service.trg_validate(uid, 'procurement.order', proc_data['id'], 'button_confirm', cr)
-                                        procurement_obj.write(cr, uid, [proc_data['id']],  {'origin': op.name}, context=context)
+                                        wf_service.trg_validate(
+                                            uid, 'procurement.order',
+                                            proc_data['id'],
+                                            'button_confirm', cr
+                                        )
+                                        procurement_obj.write(
+                                            cr, uid, [proc_data['id']],
+                                            {'origin': op.name},
+                                            context=context
+                                        )
                                         to_generate -= proc_data['product_qty']
+                                        procurement_log(
+                                            "subtracted %.2f from qty to"
+                                            " procure, for existing"
+                                            " procurement with id %d" %
+                                            (qty, prods),
+                                            op=op
+                                        )
                                     if not to_generate:
                                         break
                                 qty = to_generate
-
                         if qty:
-                            proc_id = procurement_obj.create(cr, uid,
-                                                             self._prepare_orderpoint_procurement(cr, uid, op, qty, context=context),
-                                                             context=context)
-                            wf_service.trg_validate(uid, 'procurement.order', proc_id,
-                                    'button_confirm', cr)
-                            wf_service.trg_validate(uid, 'procurement.order', proc_id,
-                                    'button_check', cr)
-                            orderpoint_obj.write(cr, uid, [op.id],
-                                    {'procurement_id': proc_id}, context=context)
+                            proc_id = procurement_obj.create(
+                                cr, uid, self._prepare_orderpoint_procurement(
+                                    cr, uid, op, qty, context=context),
+                                context=context
+                            )
+                            wf_service.trg_validate(
+                                uid, 'procurement.order', proc_id,
+                                'button_confirm', cr
+                            )
+                            wf_service.trg_validate(
+                                uid, 'procurement.order', proc_id,
+                                'button_check', cr
+                            )
+                            orderpoint_obj.write(
+                                cr, uid, [op.id],
+                                {'procurement_id': proc_id}, context=context
+                            )
+                        else:
+                            procurement_log(
+                                "aborting procurement after recomputing qty"
+                                " to %.2f" % qty,
+                                op=op
+                    else:
+                        procurement_log(
+                            "virtual stock %.2f greater then"
+                            " or equal to minimum quantity %2.f" %
+                            (prods, op.product_min_qty),
+                            op=op
+                        )
                     if use_new_cursor:
                         cr.commit()
                 except Exception as e:
