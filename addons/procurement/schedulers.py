@@ -227,7 +227,7 @@ class procurement_order(osv.osv):
                  (op.id, op.name)) or
                 ''
             )
-            logger.debug("PROCUREMENT:%s %s." (opstr, message))
+            logger.debug("PROCUREMENT:%s %s." % (opstr, message))
 
         if context is None:
             context = {}
