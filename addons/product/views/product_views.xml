@@ -283,8 +283,8 @@
                     <field name="barcode"/>
                 </field>
                 <field name="list_price" position="attributes">
-                   <attribute name="name">lst_price</attribute>
                    <attribute name="attrs">{'readonly': [('product_variant_count', '&gt;', 1)]}</attribute>
+                   <attribute name="name">lst_price</attribute>
                 </field>
                 <field name="name" position="after">
                     <field name="product_tmpl_id" class="oe_inline" readonly="1" invisible="1" attrs="{'required': [('id', '!=', False)]}"/>
