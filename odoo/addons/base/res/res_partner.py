@@ -522,8 +522,9 @@ class Partner(models.Model, FormatAddress):
             vals['company_name'] = False
         # compute default image in create, because computing gravatar in the onchange
         # cannot be easily performed if default images are in the way
-        if not vals.get('image'):
-            vals['image'] = self._get_default_image(vals.get('type'), vals.get('is_company'), vals.get('parent_id'))
+        # Patch this away as it makes mass import of partners very slow:
+        # if not vals.get('image'):
+        #     vals['image'] = self._get_default_image(vals.get('type'), vals.get('is_company'), vals.get('parent_id'))
         tools.image_resize_images(vals)
         partner = super(Partner, self).create(vals)
         partner._fields_sync(vals)
