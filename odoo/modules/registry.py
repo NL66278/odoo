@@ -297,7 +297,13 @@ class Registry(Mapping):
             model._setup_base(partial)
 
         for model in models:
-            model._setup_fields(partial)
+            try:
+                model._setup_fields(partial)
+            except:
+                _logger.error(
+                    "Error setting up fields for model %s" % model._name
+                )
+                raise
 
         for model in models:
             model._setup_complete()

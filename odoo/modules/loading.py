@@ -144,7 +144,13 @@ def load_module_graph(cr, graph, status=None, perform_checks=True,
             if pre_init:
                 getattr(py_module, pre_init)(cr)
 
-        model_names = registry.load(cr, package)
+        try:
+            model_names = registry.load(cr, package)
+        except:
+            _logger.error(
+                "Error loading module %s" % package
+            )
+            raise
 
         loaded_modules.append(package.name)
         if needs_update:
