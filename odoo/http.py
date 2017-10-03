@@ -1343,7 +1343,14 @@ class Root(object):
                         manifest['addons_path'] = addons_path
                         _logger.debug("Loading %s", module)
                         if 'odoo.addons' in sys.modules:
-                            m = __import__('odoo.addons.' + module)
+                            try:
+                                m = __import__('odoo.addons.' + module)
+                            except:
+                                _logger.error(traceback.format_exc())
+                                _logger.error(
+                                    "Could not load module %s" % module
+                                )
+                                m = None
                         else:
                             m = None
                         addons_module[module] = m
