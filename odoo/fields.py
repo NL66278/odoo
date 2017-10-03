@@ -541,9 +541,17 @@ class Field(object):
         # determine the chain of fields, and make sure they are all set up
         target = model
         for name in self.related:
-            field = target._fields[name]
-            field.setup_full(target)
-            target = target[name]
+            try:
+                field = target._fields[name]
+                field.setup_full(target)
+                target = target[name]
+            except:
+                _logger.error(
+                    "Problem setting up related field %s for model %s" %
+                    (name, self.model_name)
+                )
+                raise
+
 
         self.related_field = field
 
