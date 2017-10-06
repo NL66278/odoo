@@ -46,6 +46,7 @@ __all__ = [
 ]
 
 import logging
+import traceback
 from collections import defaultdict, Mapping
 from contextlib import contextmanager
 from inspect import currentframe, getargspec
@@ -673,12 +674,20 @@ def call_kw_model(method, self, args, kwargs):
     return downgrade(method, result, recs, args, kwargs)
 
 def call_kw_multi(method, self, args, kwargs):
-    ids, args = args[0], args[1:]
-    context, args, kwargs = split_context(method, args, kwargs)
-    recs = self.with_context(context or {}).browse(ids)
-    _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
-    result = method(recs, *args, **kwargs)
-    return downgrade(method, result, recs, args, kwargs)
+    try:
+        ids, args = args[0], args[1:]
+        context, args, kwargs = split_context(method, args, kwargs)
+        recs = self.with_context(context or {}).browse(ids)
+        _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
+        result = method(recs, *args, **kwargs)
+        return downgrade(method, result, recs, args, kwargs)
+    except:
+        _logger.error(traceback.format_exc())
+        _logger.error(
+            "Unexpected error calling %s, on %s with args=%s and kwargs=%s." %
+            (method, self, args, kwargs)
+        )
+        raise
 
 def call_kw(model, name, args, kwargs):
     """ Invoke the given method ``name`` on the recordset ``model``. """
