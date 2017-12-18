@@ -1298,6 +1298,8 @@ class expression(object):
                 q2 = stack.pop()
                 stack.append('(%s %s %s)' % (q1, ops[leaf.leaf], q2,))
 
+        if len(stack) <> 1:
+            _logger.error("Stack is now %s" % stack)
         assert len(stack) == 1
         query = stack[0]
         joins = ' AND '.join(self.joins)
