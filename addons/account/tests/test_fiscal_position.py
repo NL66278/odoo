@@ -1,4 +1,9 @@
+import logging
 from odoo.tests import common
+
+
+_logger = logging.getLogger(__name__)
+
 
 class TestFiscalPosition(common.TransactionCase):
     """Tests for fiscal positions in auto apply (account.fiscal.position).
@@ -62,10 +67,16 @@ class TestFiscalPosition(common.TransactionCase):
 
     def test_10_fp_country(self):
         def assert_fp(partner, expected_pos, message):
-            self.assertEquals(
-                self.fp.get_fiscal_position(partner.id),
-                expected_pos.id,
-                message)
+            partner_pos_id = self.fp.get_fiscal_position(partner.id)
+            # If we know assert will raise an error, tell names of
+            # actual fiscal positions:
+            if partner_pos_id != expected_pos.id:
+                partner_pos = self.fp.browse([partner_pos_id])
+                _logger.error(
+                    "Partner has fp %s, but expected fp is %s",
+                    partner_pos.name,
+                    expected_pos.name)
+            self.assertEquals(partner_pos_id, expected_pos.id, message)
 
         george, jc, ben, alberto = self.george, self.jc, self.ben, self.alberto
 
