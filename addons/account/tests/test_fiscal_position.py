@@ -141,8 +141,12 @@ class TestFiscalPosition(common.TransactionCase):
             name="EU-VAT-FR-B2B-state",
             sequence=70))
         george.state_id = self.state_fr
+        self.assertEquals(
+            george.state_id, self.state_fr, "Setting state failed")
         assert_fp(george, self.fr_b2b_zip100, "FR-B2B with zip should have precedence over states")
         george.zip = 0
+        self.assertEquals(
+            george.state_id, self.state_fr, "State has been reset somehow")
         assert_fp(george, self.fr_b2b_state, "FR-B2B with states should have precedence")
 
         # Dedicated position has max precedence
