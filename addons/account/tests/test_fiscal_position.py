@@ -73,7 +73,7 @@ class TestFiscalPosition(common.TransactionCase):
             if partner_pos_id != expected_pos.id:
                 partner_pos = self.fp.browse([partner_pos_id])
                 _logger.error(
-                    "Partner %s in country %s and state % with zip %s"
+                    "Partner %s in country %s and state %s with zip %s"
                     " has fp %s, but expected fp is %s",
                     partner.name,
                     partner.country_id.name,
