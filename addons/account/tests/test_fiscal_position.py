@@ -73,7 +73,12 @@ class TestFiscalPosition(common.TransactionCase):
             if partner_pos_id != expected_pos.id:
                 partner_pos = self.fp.browse([partner_pos_id])
                 _logger.error(
-                    "Partner has fp %s, but expected fp is %s",
+                    "Partner %s in country %s and state % with zip %s"
+                    " has fp %s, but expected fp is %s",
+                    partner.name,
+                    partner.country_id.name,
+                    partner.state_id.name,
+                    partner.zip,
                     partner_pos.name,
                     expected_pos.name)
             self.assertEquals(partner_pos_id, expected_pos.id, message)
@@ -131,7 +136,10 @@ class TestFiscalPosition(common.TransactionCase):
         assert_fp(george, self.fr_b2b_zip100, "FR-B2B with zip range should have precedence")
 
         # States
-        self.fr_b2b_state = self.fr_b2b.copy(dict(state_ids=[(4, self.state_fr.id)], sequence=70))
+        self.fr_b2b_state = self.fr_b2b.copy(dict(
+            state_ids=[(4, self.state_fr.id)],
+            name="EU-VAT-FR-B2B-state",
+            sequence=70))
         george.state_id = self.state_fr
         assert_fp(george, self.fr_b2b_zip100, "FR-B2B with zip should have precedence over states")
         george.zip = 0
