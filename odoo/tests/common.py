@@ -180,6 +180,7 @@ class TransactionCase(BaseCase):
         self.uid = odoo.SUPERUSER_ID
         #: :class:`~odoo.api.Environment` for the current test case
         self.env = api.Environment(self.cr, self.uid, {})
+        self.env.user.partner_id.write({'lang': 'en_US'})
 
         @self.addCleanup
         def reset():

@@ -167,7 +167,7 @@ class TestMailTemplate(TestMail):
         self.assertEqual(last_template.body_html, '<p>Dummy body</p>', 'email_template incorrect body_html')
 
     def test_add_context_action(self):
-        self.email_template.create_action()
+        self.email_template.with_context(lang='en_US').create_action()
 
         # check template act_window has been updated
         self.assertTrue(bool(self.email_template.ref_ir_act_window))

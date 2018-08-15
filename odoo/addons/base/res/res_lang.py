@@ -171,6 +171,9 @@ class Lang(models.Model):
             partner = self.env.user.company_id.partner_id
             if not partner.lang:
                 partner.write({'lang': lang_code})
+        # If languagecode is not 'en_US', install this language also
+        if lang_code != 'en_US':
+            self.load_lang('en_US')
         return True
 
     @tools.ormcache('code')

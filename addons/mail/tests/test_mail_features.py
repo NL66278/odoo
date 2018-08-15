@@ -226,6 +226,7 @@ class TestMessagePost(TestMail):
             'default_composition_mode': 'comment',
             'default_model': 'mail.test',
             'default_res_id': self.test_pigs.id,
+            'lang': 'en_US',
         }).sudo(self.user_employee).create({
             'body': '<p>Test Body</p>',
             'partner_ids': [(4, self.partner_1.id), (4, self.partner_2.id)]
@@ -242,6 +243,7 @@ class TestMessagePost(TestMail):
             'default_composition_mode': 'comment',
             'default_res_id': self.test_pigs.id,
             'default_parent_id': message.id
+            'lang': 'en_US',
         }).sudo(self.user_employee).create({})
 
         self.assertEqual(composer.model, 'mail.test')

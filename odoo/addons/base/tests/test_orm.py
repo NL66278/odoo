@@ -276,7 +276,7 @@ class TestInherits(TransactionCase):
         })
         foo_before, = user_foo.read()
         del foo_before['__last_update']
-        user_bar = user_foo.copy({'login': 'bar'})
+        user_bar = user_foo.with_context(lang='en_US').copy({'login': 'bar'})
         foo_after, = user_foo.read()
         del foo_after['__last_update']
 

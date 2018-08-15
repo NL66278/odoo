@@ -28,6 +28,7 @@ class TestServerActionsBase(common.TransactionCase):
         self.context = {
             'active_model': 'res.partner',
             'active_id': self.test_partner.id,
+            'lang': 'en_US',
         }
 
         # Model data
