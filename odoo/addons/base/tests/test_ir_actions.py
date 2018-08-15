@@ -26,6 +26,7 @@ class TestServerActionsBase(common.TransactionCase):
         self.context = {
             'active_model': 'res.partner',
             'active_id': self.test_partner.id,
+            'lang': 'en_US',
         }
 
         # Model data
@@ -64,10 +65,11 @@ class TestServerActions(TestServerActionsBase):
         self.assertEqual(self.test_partner.comment, 'MyComment', 'ir_actions_server: invalid condition check')
 
         # Do: create contextual action
-        self.action.create_action()
+        self.action.with_context(lang='en_US').create_action()
 
         # Test: ir_values created
-        ir_values = self.env['ir.values'].search([('name', '=', 'TestAction')])
+        ir_values = self.env['ir.values'].search(
+            [('name', '=', 'Run TestAction')])
         self.assertEqual(len(ir_values), 1, 'ir_actions_server: create_action should have created an entry in ir_values')
         self.assertEqual(ir_values.value, 'ir.actions.server,%s' % self.action.id, 'ir_actions_server: created ir_values should reference the server action')
         self.assertEqual(ir_values.model, 'res.partner', 'ir_actions_server: created ir_values should be linked to the action base model')

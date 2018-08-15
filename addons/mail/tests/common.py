@@ -59,6 +59,7 @@ class TestMail(common.SavepointCase):
             'email': 'e.e@example.com',
             'signature': '--\nErnest',
             'notify_email': 'always',
+            'lang': 'en_US',
             'groups_id': [(6, 0, [user_group_employee.id])]})
         cls.user_public = Users.create({
             'name': 'Bert Tartignole',
@@ -66,6 +67,7 @@ class TestMail(common.SavepointCase):
             'email': 'b.t@example.com',
             'signature': 'SignBert',
             'notify_email': 'always',
+            'lang': 'en_US',
             'groups_id': [(6, 0, [user_group_public.id])]})
         cls.user_portal = Users.create({
             'name': 'Chell Gladys',
@@ -73,6 +75,7 @@ class TestMail(common.SavepointCase):
             'email': 'chell@gladys.portal',
             'signature': 'SignChell',
             'notify_email': 'always',
+            'lang': 'en_US',
             'groups_id': [(6, 0, [user_group_portal.id])]})
         cls.user_admin = cls.env.user
 
@@ -80,10 +83,12 @@ class TestMail(common.SavepointCase):
         cls.partner_1 = cls.env['res.partner'].create({
             'name': 'Valid Lelitre',
             'email': 'valid.lelitre@agrolait.com',
+            'lang': 'en_US',
             'notify_email': 'always'})
         cls.partner_2 = cls.env['res.partner'].create({
             'name': 'Valid Poilvache',
             'email': 'valid.other@gmail.com',
+            'lang': 'en_US',
             'notify_email': 'always'})
 
         # Create test groups without followers and messages by default
