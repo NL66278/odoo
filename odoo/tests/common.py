@@ -241,6 +241,8 @@ class SavepointCase(SingleTransactionCase):
     def setUp(self):
         self._savepoint_id = next(savepoint_seq)
         self.cr.execute('SAVEPOINT test_%d' % self._savepoint_id)
+        self.env.user.partner_id.write({'lang': 'en_US'})
+
     def tearDown(self):
         self.cr.execute('ROLLBACK TO SAVEPOINT test_%d' % self._savepoint_id)
         self.env.clear()
