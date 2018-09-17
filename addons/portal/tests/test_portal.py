@@ -17,7 +17,8 @@ class TestPortal(TestMail):
         compose = self.env['mail.compose.message'].with_context({
             'default_composition_mode': 'comment',
             'default_model': 'mail.channel',
-            'default_res_id': self.group_pigs.id
+            'default_res_id': self.group_pigs.id,
+            'lang': 'en_US'
         }).sudo(self.user_portal).create({
             'subject': 'Subject',
             'body': 'Body text',
@@ -27,7 +28,8 @@ class TestPortal(TestMail):
         # Do: Chell replies to a Pigs message using the composer
         compose = self.env['mail.compose.message'].with_context({
             'default_composition_mode': 'comment',
-            'default_parent_id': port_msg.id
+            'default_parent_id': port_msg.id,
+            'lang': 'en_US'
         }).sudo(self.user_portal).create({
             'subject': 'Subject',
             'body': 'Body text'})
@@ -38,13 +40,17 @@ class TestPortal(TestMail):
         group_pigs = self.group_pigs
         base_url = self.env['ir.config_parameter'].get_param('web.base.url', default='')
         # Carine Poilvache, with email, should receive emails for comments and emails
-        partner_carine = self.env['res.partner'].create({'name': 'Carine Poilvache', 'email': 'c@c'})
-
+        partner_carine = self.env['res.partner'].create({
+            'name': 'Carine Poilvache',
+            'email': 'c@c',
+            'lang': 'en_US'})
         # Do: create a mail_wizard_invite, validate it
         self._init_mock_build_email()
         mail_invite = self.env['mail.wizard.invite'].with_context({
             'default_res_model': 'mail.channel',
-            'default_res_id': group_pigs.id}).create({
+            'default_res_id': group_pigs.id,
+            'lang': 'en_US'
+        }).create({
             'partner_ids': [(4, partner_carine.id)], 'send_mail': True})
         mail_invite.add_followers()
         # Test: Pigs followers should contain Admin and Bert
