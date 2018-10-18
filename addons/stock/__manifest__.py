@@ -89,7 +89,6 @@ Dashboard / Reports for Inventory Management will include:
         'data/stock_data.yml',
         'data/stock_incoterms_data.xml',
         'data/stock_sequence_data.xml',
-        'data/web_planner_data.xml',
     ],
     'test': [
         'test/procrule.yml',

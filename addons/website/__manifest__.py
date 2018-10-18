@@ -17,7 +17,6 @@ Odoo Website CMS
     'installable': True,
     'data': [
         'data/website_data.xml',
-        'data/web_planner_data.xml',
         'security/website_security.xml',
         'security/ir.model.access.csv',
 

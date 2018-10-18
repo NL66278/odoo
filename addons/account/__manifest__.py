@@ -46,7 +46,6 @@ You could use this simplified accounting in case you work with an (external) acc
         'report/inherited_layouts.xml',
         'views/account_journal_dashboard_view.xml',
         'views/report_overdue.xml',
-        'views/web_planner_data.xml',
         'views/report_overdue.xml',
         'wizard/account_report_common_view.xml',
         'wizard/account_report_print_journal_view.xml',

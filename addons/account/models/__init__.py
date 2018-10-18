@@ -12,4 +12,3 @@ import account_journal_dashboard
 import product
 import company
 import res_config
-import web_planner

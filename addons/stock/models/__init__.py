@@ -18,4 +18,3 @@ import stock_picking
 import stock_quant
 import stock_warehouse
 import stock_scrap
-import web_planner

@@ -718,11 +718,6 @@ file_filter = addons/web_kanban_gauge/i18n/<lang>.po
 source_file = addons/web_kanban_gauge/i18n/web_kanban_gauge.pot
 source_lang = en
 
-[odoo-10.web_planner]
-file_filter = addons/web_planner/i18n/<lang>.po
-source_file = addons/web_planner/i18n/web_planner.pot
-source_lang = en
-
 [odoo-10.web_settings_dashboard]
 file_filter = addons/web_settings_dashboard/i18n/<lang>.po
 source_file = addons/web_settings_dashboard/i18n/web_settings_dashboard.pot

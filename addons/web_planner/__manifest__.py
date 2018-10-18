@@ -1,20 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 {
     'name': 'Planner',
     'category': 'Extra Tools',
-    'summary': 'Help to configure application',
+    'summary': 'Dummy module - does not work',
     'version': '1.0',
-    'description': """Application Planner""",
+    'description': """Application Planner - now ony stub left.""",
     'depends': ['web'],
-    'data': [
-        'security/ir.model.access.csv',
-        'security/web_planner_security.xml',
-        'views/web_planner_templates.xml',
-        'views/web_planner_views.xml',
-    ],
-    'qweb': ['static/src/xml/web_planner.xml'],
-    'installable': True,
-    'auto_install': True,
+    'data': [],
 }
