@@ -18,6 +18,8 @@ var PlannerLauncher = Widget.extend({
         this.planner_by_menu = {};
         this.need_reflow = false;
     },
+    start: function() {},
+    /* Replaced start function by noop to deactivate planner.
     start: function() {
         var self = this;
         core.bus.on("change_menu_section", self, self.on_menu_clicked);
@@ -32,6 +34,7 @@ var PlannerLauncher = Widget.extend({
         });
         return res;
     },
+    */
     fetch_application_planner: function() {
         var self = this;
         var def = $.Deferred();
