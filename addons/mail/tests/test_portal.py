@@ -42,12 +42,15 @@ class TestPortal(TestMail):
 
         base_url = self.env['ir.config_parameter'].get_param('web.base.url', default='')
         # Carine Poilvache, with email, should receive emails for comments and emails
-        partner_carine = self.env['res.partner'].create({'name': 'Carine Poilvache', 'email': 'c@c'})
-
+        partner_carine = self.env['res.partner'].create({
+            'name': 'Carine Poilvache',
+            'lang': 'en_US',
+            'email': 'c@c'})
         # Do: create a mail_wizard_invite, validate it
         self._init_mock_build_email()
         mail_invite = self.env['mail.wizard.invite'].with_context({
             'default_res_model': 'mail.test',
+            'lang': 'en_US',
             'default_res_id': test_record.id}).create({
             'partner_ids': [(4, partner_carine.id)], 'send_mail': True})
         mail_invite.add_followers()

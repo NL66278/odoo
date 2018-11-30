@@ -242,7 +242,7 @@ class TestMessagePost(TestMail):
         composer = self.env['mail.compose.message'].with_context({
             'default_composition_mode': 'comment',
             'default_res_id': self.test_pigs.id,
-            'default_parent_id': message.id
+            'default_parent_id': message.id,
             'lang': 'en_US',
         }).sudo(self.user_employee).create({})
 

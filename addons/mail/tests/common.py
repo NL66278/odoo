@@ -22,6 +22,7 @@ class BaseFunctionalTest(common.SavepointCase):
             'email': 'e.e@example.com',
             'signature': '--\nErnest',
             'notification_type': 'email',
+            'lang': 'en_US',
             'groups_id': [(6, 0, [user_group_employee.id])]})
         cls.user_public = Users.create({
             'name': 'Bert Tartignole',
@@ -29,6 +30,7 @@ class BaseFunctionalTest(common.SavepointCase):
             'email': 'b.t@example.com',
             'signature': 'SignBert',
             'notification_type': 'email',
+            'lang': 'en_US',
             'groups_id': [(6, 0, [user_group_public.id])]})
         cls.user_portal = Users.create({
             'name': 'Chell Gladys',
@@ -36,6 +38,7 @@ class BaseFunctionalTest(common.SavepointCase):
             'email': 'chell@gladys.portal',
             'signature': 'SignChell',
             'notification_type': 'email',
+            'lang': 'en_US',
             'groups_id': [(6, 0, [user_group_portal.id])]})
         cls.user_admin = cls.env.user
 

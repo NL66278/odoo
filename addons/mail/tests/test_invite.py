@@ -11,7 +11,7 @@ class TestInvite(TestMail):
     def test_invite_email(self):
         mail_invite = self.env['mail.wizard.invite'].with_context({
             'default_res_model': 'mail.test',
-            'default_res_id': self.test_pigs.id
+            'default_res_id': self.test_pigs.id,
             'lang': 'en_US'
         }).sudo(self.user_employee.id).create({
             'partner_ids': [(4, self.user_portal.partner_id.id), (4, self.partner_1.id)],
