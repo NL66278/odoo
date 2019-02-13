@@ -184,9 +184,17 @@ class AccountAccount(models.Model):
         # So to prevent some bugs we add a constraint saying that you cannot change the reconcile field if there is any aml existing
         # for that account.
         if vals.get('reconcile'):
-            move_lines = self.env['account.move.line'].search([('account_id', 'in', self.ids)], limit=1)
-            if len(move_lines):
-                raise UserError(_('You cannot change the value of the reconciliation on this account as it already has some moves'))
+            if all(self.mapped('reconcile')):
+                del vals['reconcile']
+                if not vals:  # might have been only value
+                    return True
+            else:
+                move_lines = self.env['account.move.line'].search(
+                    [('account_id', 'in', self.ids)], limit=1)
+                if len(move_lines):
+                    raise UserError(_(
+                        'You cannot change the value of the reconciliation'
+                        ' on this account as it already has some moves'))
 
         if vals.get('currency_id'):
             for account in self:
