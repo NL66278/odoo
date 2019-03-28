@@ -17,6 +17,7 @@ if(!$('#oe_main_menu_navbar').length) {
 var WebsitePlannerLauncher = Widget.extend({
     template: "PlannerLauncher",
     start: function () {
+        /*
         var self = this;
         var res = this._super.apply(this, arguments);
         this.$('.progress').show();
@@ -28,6 +29,7 @@ var WebsitePlannerLauncher = Widget.extend({
                 self.setup();
             }
         });
+        */
     },
     get_website_planner: function () {
         return (new Model('web.planner')).call('search_read', [[['planner_application', '=', 'planner_website']]]);
