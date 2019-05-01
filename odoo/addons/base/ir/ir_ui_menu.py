@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 import base64
+import logging
 import operator
 import re
 
@@ -13,6 +13,9 @@ from odoo.tools.safe_eval import safe_eval
 
 MENU_ITEM_SEPARATOR = "/"
 NUMBER_PARENS = re.compile(r"\(([0-9]+)\)")
+
+
+_logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class IrUiMenu(models.Model):
@@ -313,5 +316,20 @@ class IrUiMenu(models.Model):
         self.env.cr.execute(STATEMENT)
         count = self.env.cr.fetchone()[0]
         if count > 0:
+            STATEMENT_EXTENDED = \
+                "SELECT mn.id, mn.parent_id, mn.name, dt.name, dt.module" \
+                " FROM ir_ui_menu mn" \
+                " LEFT OUTER JOIN ir_model_data dt" \
+                "     ON dt.model = 'ir.ui.menu' AND dt.res_id = mn.id" \
+                " WHERE NOT parent_id IS NULL" \
+                "   AND (parent_left is null or parent_right is null)"
+            self.env.cr.execute(STATEMENT_EXTENDED)
+            for record in self.env.cr.fetchall():
+                _logger.error(
+                    "Menu %s with id %d and parent_id %d is missing link"
+                    " to parent_left and/or parent_right.\n"
+                    "Menu added from %s.%s.",
+                    record[1], record[0], record[2],
+                    record[4] or '?', record[3] or '?')
             raise MissingError(
                 "Menu's have been corrupted. Regenerate parent hierarchy.")
