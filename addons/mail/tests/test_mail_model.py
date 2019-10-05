@@ -4,16 +4,6 @@
 from odoo import fields, models
 
 
-class MailTestSimple(models.Model):
-    _description = 'Test Simple Chatter Record'
-    _name = 'mail.test.simple'
-    _inherit = ['mail.thread']
-
-    name = fields.Char()
-    email_from = fields.Char()
-    description = fields.Text()
-
-
 class MailTest(models.Model):
     _description = 'Test Mail Model'
     _name = 'mail.test'
