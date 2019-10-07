@@ -1407,7 +1407,13 @@ class IrModelData(models.Model):
                     _logger.info('Deleting %s@%s (%s.%s)', res_id, model, module, name)
                     record = self.env[model].browse(res_id)
                     if record.exists():
-                        record.unlink()
+                        try:
+                            record.unlink()
+                        except Exception:
+                            _logger.info(
+                                _("Error deleting %s.%s"),
+                                module, name,
+                                exc_info=True)
                     else:
                         bad_imd_ids.append(id)
         if bad_imd_ids:
