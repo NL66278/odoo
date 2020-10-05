@@ -203,7 +203,15 @@ class ImDispatch(object):
         self.started = True
         return self
 
+
+_logger.info(
+    "BUS: odoo.multi_process=%s, odoo.evented=%s",
+    odoo.multi_process,
+    odoo.evented
+)
 dispatch = None
 if not odoo.multi_process or odoo.evented:
     # We only use the event dispatcher in threaded and gevent mode
     dispatch = ImDispatch()
+else:
+    _logger.info("BUS: bus will not be available.")
