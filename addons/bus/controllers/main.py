@@ -34,9 +34,7 @@ class BusController(Controller):
         if options is None:
             options = {}
         if not dispatch:
-            # Just do nothing to prevent log flooding
-            # raise Exception("bus.Bus unavailable")
-            return ""
+            raise Exception("bus.Bus unavailable")
         if [c for c in channels if not isinstance(c, pycompat.string_types)]:
             raise Exception("bus.Bus only string channels are allowed.")
         if request.registry.in_test_mode():

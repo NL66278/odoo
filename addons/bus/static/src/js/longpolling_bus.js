@@ -199,6 +199,8 @@ var LongpollingBus = Bus.extend(ServicesMixin, {
             ev.preventDefault();
             if (error && error.message === "XmlHttpRequestError abort") {
                 self._poll();
+            } else if (error && error.message.includes("bus.Bus unavailable")) {
+                // do nothing - ignore
             } else {
                 // random delay to avoid massive longpolling
                 self._pollRetryTimeout = setTimeout(self._poll, self.ERROR_RETRY_DELAY + (Math.floor((Math.random()*20)+1)*1000));

@@ -23,8 +23,6 @@ from odoo.tools.lru import LRU
 
 _logger = logging.getLogger(__name__)
 
-exception_counter = 0
-
 
 class Registry(Mapping):
     """ Model registry for a particular database.
@@ -354,7 +352,6 @@ class Registry(Mapping):
 
     def setup_signaling(self):
         """ Setup the inter-process signaling on this registry. """
-        global exception_counter
         if self.in_test_mode():
             return
 
@@ -374,14 +371,8 @@ class Registry(Mapping):
                                   base_cache_signaling.last_value
                            FROM base_registry_signaling, base_cache_signaling""")
             self.registry_sequence, self.cache_sequence = cr.fetchone()
-            exception_counter += 1
-            if exception_counter < 10 or exception_counter in (100, 1000):
-                _logger.debug(
-                    "Multiprocess load registry signaling: [Registry: %s] [Cache: %s]",
-                    self.registry_sequence, self.cache_sequence
-                )
-                if exception_counter in (100, 200, 500, 1000):
-                    _logger.exception("Lots of registry signaling, check traceback.")
+            _logger.debug("Multiprocess load registry signaling: [Registry: %s] [Cache: %s]",
+                          self.registry_sequence, self.cache_sequence)
 
     def check_signaling(self):
         """ Check whether the registry has changed, and performs all necessary
@@ -395,8 +386,8 @@ class Registry(Mapping):
                                   base_cache_signaling.last_value
                            FROM base_registry_signaling, base_cache_signaling""")
             r, c = cr.fetchone()
-            # _logger.debug("Multiprocess signaling check: [Registry - %s -> %s] [Cache - %s -> %s]",
-            #               self.registry_sequence, r, self.cache_sequence, c)
+            _logger.debug("Multiprocess signaling check: [Registry - %s -> %s] [Cache - %s -> %s]",
+                          self.registry_sequence, r, self.cache_sequence, c)
             # Check if the model registry must be reloaded
             if self.registry_sequence != r:
                 _logger.info("Reloading the model registry after database signaling.")
