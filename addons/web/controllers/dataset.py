@@ -30,8 +30,21 @@ class DataSet(http.Controller):
 
     def _call_kw(self, model, method, args, kwargs):
         Model = request.env[model]
-        get_public_method(Model, method)  # Don't use the result, call_kw will redo the getattr
-        return call_kw(Model, method, args, kwargs)
+        get_public_method(Model, method)
+        try:
+            # Don't use the result, call_kw will redo the getattr
+            return call_kw(Model, method, args, kwargs)
+        except Exception as exc:
+            _logger.error(
+                "Error calling method %(method)s"
+                " with args %(args)s and kwargs %(kwargs)s",
+                {
+                    "method": method,
+                    "args": str(args),
+                    "kwargs": str(kwargs),
+                },
+            )
+            raise
 
     @http.route('/web/dataset/call', type='json', auth="user")
     def call(self, model, method, args, domain_id=None, context_id=None):
