@@ -845,7 +845,7 @@ class BaseModel(metaclass=MetaModel):
                             # 'check_translations' skips the delayed translations,
                             # which are not reimportable next to their source
                             translated = record.with_context(check_translations=True)
-                            value = (translated.with_context(lang=lang) if lang else translated)[fname]
+                            value = record._get_stored_translations(fname)
                         else:
                             value = record[fname]
 
